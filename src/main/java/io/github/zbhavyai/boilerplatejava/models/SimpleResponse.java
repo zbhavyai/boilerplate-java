@@ -1,5 +1,8 @@
 package io.github.zbhavyai.boilerplatejava.models;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -7,7 +10,8 @@ public class SimpleResponse {
 
     private final String message;
 
-    private SimpleResponse(String message) {
+    @JsonCreator
+    private SimpleResponse(@JsonProperty("message") String message) {
         this.message = message;
     }
 
@@ -15,6 +19,7 @@ public class SimpleResponse {
         return new SimpleResponse(message);
     }
 
+    @JsonProperty("message")
     public String getMessage() {
         return this.message;
     }
