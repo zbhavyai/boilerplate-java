@@ -1,5 +1,7 @@
 package io.github.zbhavyai.service;
 
+import org.jboss.logging.Logger;
+
 import io.github.zbhavyai.models.SimpleResponse;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -10,8 +12,12 @@ import jakarta.ws.rs.core.Response.Status;
 @ApplicationScoped
 public class GreetingServiceImpl implements GreetingService {
 
+    private static final Logger LOGGER = Logger.getLogger(GreetingService.class.getSimpleName());
+
     @Override
     public Uni<Response> greet() {
+        LOGGER.infof("greet");
+
         Response res = Response
                 .status(Status.OK)
                 .entity(SimpleResponse.create("Hello World!"))
@@ -22,6 +28,8 @@ public class GreetingServiceImpl implements GreetingService {
 
     @Override
     public Uni<Response> error() {
+        LOGGER.errorf("error");
+
         return Uni.createFrom()
                 .failure(() -> new WebApplicationException(
                         Response.status(Status.BAD_REQUEST)
