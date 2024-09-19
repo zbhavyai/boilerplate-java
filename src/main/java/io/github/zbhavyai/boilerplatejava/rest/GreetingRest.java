@@ -1,6 +1,6 @@
-package io.github.zbhavyai.rest;
+package io.github.zbhavyai.boilerplatejava.rest;
 
-import io.github.zbhavyai.service.GreetingService;
+import io.github.zbhavyai.boilerplatejava.service.GreetingService;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;

@@ -1,4 +1,4 @@
-package io.github.zbhavyai.utils;
+package io.github.zbhavyai.boilerplatejava.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

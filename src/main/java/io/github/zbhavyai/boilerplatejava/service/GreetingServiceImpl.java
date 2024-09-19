@@ -1,8 +1,8 @@
-package io.github.zbhavyai.service;
+package io.github.zbhavyai.boilerplatejava.service;
 
 import org.jboss.logging.Logger;
 
-import io.github.zbhavyai.models.SimpleResponse;
+import io.github.zbhavyai.boilerplatejava.models.SimpleResponse;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.WebApplicationException;

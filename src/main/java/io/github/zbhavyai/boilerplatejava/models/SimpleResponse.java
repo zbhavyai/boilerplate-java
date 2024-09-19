@@ -1,4 +1,4 @@
-package io.github.zbhavyai.models;
+package io.github.zbhavyai.boilerplatejava.models;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

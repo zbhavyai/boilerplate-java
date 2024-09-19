@@ -1,4 +1,4 @@
-package io.github.zbhavyai.client;
+package io.github.zbhavyai.boilerplatejava.client;
 
 import java.time.Duration;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import io.github.zbhavyai.models.SimpleResponse;
+import io.github.zbhavyai.boilerplatejava.models.SimpleResponse;
 import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.MultiMap;

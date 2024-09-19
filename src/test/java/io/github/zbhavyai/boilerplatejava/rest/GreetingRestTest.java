@@ -1,4 +1,4 @@
-package io.github.zbhavyai.rest;
+package io.github.zbhavyai.boilerplatejava.rest;
 
 import static io.restassured.RestAssured.given;
 
