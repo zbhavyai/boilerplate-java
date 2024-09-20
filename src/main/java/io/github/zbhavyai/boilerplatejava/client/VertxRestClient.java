@@ -80,6 +80,28 @@ public class VertxRestClient {
                 .failWith(this.handleTimeout());
     }
 
+    public <T> Uni<Response> putRequest(
+            String uri,
+            Map<String, String> headers,
+            Object payload,
+            Class<T> responseType) {
+        LOGGER.infof("putRequest: uri=\"%s\"", uri);
+        LOGGER.debugf("putRequest: payload=\"%s\"", JSONMapper.serialize(payload));
+
+        HttpRequest<T> req = this.client
+                .putAbs(uri)
+                .as(BodyCodec.json(responseType))
+                .putHeaders(this.convertMapToMultiMap(headers));
+
+        return req
+                .sendJson(payload)
+                .onItem().transform(r -> this.handleResponse(r))
+                .onFailure().transform(t -> this.handleFailure(t))
+                .ifNoItem()
+                .after(this.timeout)
+                .failWith(this.handleTimeout());
+    }
+
     private <T> Response handleResponse(HttpResponse<T> res) {
         LOGGER.infof("handleResponse: status=\"%s\"", res.statusCode());
         LOGGER.debugf("handleResponse: headers=\"%s\", body=\"%s\"", res.headers(),
