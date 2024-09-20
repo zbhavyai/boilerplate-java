@@ -2,6 +2,7 @@ package io.github.zbhavyai.boilerplatejava.utils;
 
 import org.jboss.logging.Logger;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -36,6 +37,15 @@ public class JSONMapper {
     }
 
     public static <T> T deserialize(String str, Class<T> type) {
+        try {
+            return objectMapper.readValue(str, type);
+        } catch (Throwable t) {
+            LOGGER.errorf("Deserialization error: %s", t.getMessage());
+            return null;
+        }
+    }
+
+    public static <T> T deserialize(String str, TypeReference<T> type) {
         try {
             return objectMapper.readValue(str, type);
         } catch (Throwable t) {
