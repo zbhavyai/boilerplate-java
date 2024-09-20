@@ -15,7 +15,7 @@ public class GreetingRest {
     private final GreetingService service;
 
     @Inject
-    public GreetingRest(final GreetingService service) {
+    public GreetingRest(GreetingService service) {
         this.service = service;
     }
 

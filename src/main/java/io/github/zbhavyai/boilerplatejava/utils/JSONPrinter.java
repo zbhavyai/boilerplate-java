@@ -16,7 +16,7 @@ public class JSONPrinter {
     private JSONPrinter() {
     }
 
-    public static <T> String prettyPrint(final T value) {
+    public static <T> String prettyPrint(T value) {
         try {
             return objectMapper.writeValueAsString(value);
         } catch (Throwable t) {

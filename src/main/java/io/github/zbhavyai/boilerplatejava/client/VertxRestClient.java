@@ -47,15 +47,15 @@ public class VertxRestClient {
         HttpRequest<T> req = this.client
                 .getAbs(uri)
                 .as(BodyCodec.json(responseType))
-                .putHeaders(convertMapToMultiMap(headers));
+                .putHeaders(this.convertMapToMultiMap(headers));
 
         return req
                 .send()
-                .onItem().transform(r -> handleResponse(r))
-                .onFailure().transform(t -> handleFailure(t))
+                .onItem().transform(r -> this.handleResponse(r))
+                .onFailure().transform(t -> this.handleFailure(t))
                 .ifNoItem()
-                .after(timeout)
-                .failWith(handleTimeout());
+                .after(this.timeout)
+                .failWith(this.handleTimeout());
     }
 
     public <T> Uni<Response> postRequest(
@@ -69,15 +69,15 @@ public class VertxRestClient {
         HttpRequest<T> req = this.client
                 .postAbs(uri)
                 .as(BodyCodec.json(responseType))
-                .putHeaders(convertMapToMultiMap(headers));
+                .putHeaders(this.convertMapToMultiMap(headers));
 
         return req
                 .sendJson(payload)
-                .onItem().transform(r -> handleResponse(r))
-                .onFailure().transform(t -> handleFailure(t))
+                .onItem().transform(r -> this.handleResponse(r))
+                .onFailure().transform(t -> this.handleFailure(t))
                 .ifNoItem()
-                .after(timeout)
-                .failWith(handleTimeout());
+                .after(this.timeout)
+                .failWith(this.handleTimeout());
     }
 
     private <T> Response handleResponse(HttpResponse<T> res) {
@@ -127,7 +127,7 @@ public class VertxRestClient {
                         .build());
     }
 
-    private MultiMap convertMapToMultiMap(final Map<String, String> obj) {
+    private MultiMap convertMapToMultiMap(Map<String, String> obj) {
         return MultiMap.caseInsensitiveMultiMap().addAll(obj);
     }
 }
