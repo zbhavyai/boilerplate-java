@@ -7,7 +7,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import io.github.zbhavyai.boilerplatejava.models.SimpleResponse;
-import io.github.zbhavyai.boilerplatejava.utils.JSONPrinter;
+import io.github.zbhavyai.boilerplatejava.utils.JSONMapper;
 import io.smallrye.mutiny.Uni;
 import io.vertx.mutiny.core.MultiMap;
 import io.vertx.mutiny.core.Vertx;
@@ -64,7 +64,7 @@ public class VertxRestClient {
             Object payload,
             Class<T> responseType) {
         LOGGER.infof("postRequest: uri=\"%s\"", uri);
-        LOGGER.debugf("postRequest: payload=\"%s\"", JSONPrinter.prettyPrint(payload));
+        LOGGER.debugf("postRequest: payload=\"%s\"", JSONMapper.serialize(payload));
 
         HttpRequest<T> req = this.client
                 .postAbs(uri)
@@ -83,7 +83,7 @@ public class VertxRestClient {
     private <T> Response handleResponse(HttpResponse<T> res) {
         LOGGER.infof("handleResponse: status=\"%s\"", res.statusCode());
         LOGGER.debugf("handleResponse: headers=\"%s\", body=\"%s\"", res.headers(),
-                JSONPrinter.prettyPrint(res.body()));
+                JSONMapper.serialize(res.body()));
 
         if (res.statusCode() >= 200 && res.statusCode() < 300) {
             return Response.status(res.statusCode()).entity(res.body()).build();
