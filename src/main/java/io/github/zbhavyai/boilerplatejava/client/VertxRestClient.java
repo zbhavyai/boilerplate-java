@@ -26,7 +26,7 @@ public class VertxRestClient {
 
     private static final Logger LOGGER = Logger.getLogger(VertxRestClient.class.getSimpleName());
 
-    public final WebClient client;
+    private final WebClient client;
     private final Duration timeout;
 
     @Inject
@@ -125,11 +125,7 @@ public class VertxRestClient {
                     tw.getResponse().getStatusInfo().getReasonPhrase(),
                     tw.getLocalizedMessage());
 
-            return new WebApplicationException(
-                    Response
-                            .status(tw.getResponse().getStatus())
-                            .entity(SimpleResponse.create(t.getLocalizedMessage()))
-                            .build());
+            return new WebApplicationException(tw.getResponse());
         } else {
             LOGGER.errorf("handleFailure: error=\"%s\"", t.getLocalizedMessage());
 
