@@ -25,7 +25,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
 @ApplicationScoped
-public class VertxRestClient {
+public class VertxRestClient implements RestClient {
 
     private static final Logger LOGGER = Logger.getLogger(VertxRestClient.class.getSimpleName());
 
@@ -41,6 +41,7 @@ public class VertxRestClient {
         this.timeout = Duration.ofSeconds(timeout);
     }
 
+    @Override
     public Uni<Response> getRequest(
             String uri,
             Map<String, String> headers) {
@@ -60,6 +61,7 @@ public class VertxRestClient {
                 .failWith(this.handleTimeout());
     }
 
+    @Override
     public Uni<Response> postRequest(
             String uri,
             Map<String, String> headers,
@@ -81,6 +83,7 @@ public class VertxRestClient {
                 .failWith(this.handleTimeout());
     }
 
+    @Override
     public Uni<Response> putRequest(
             String uri,
             Map<String, String> headers,
@@ -95,6 +98,48 @@ public class VertxRestClient {
 
         return req
                 .sendJson(payload)
+                .onItem().transform(r -> this.handleResponse(r))
+                .onFailure().transform(t -> this.handleFailure(t))
+                .ifNoItem()
+                .after(this.timeout)
+                .failWith(this.handleTimeout());
+    }
+
+    @Override
+    public Uni<Response> patchRequest(
+            String uri,
+            Map<String, String> headers,
+            Object payload) {
+        LOGGER.infof("patchRequest: uri=\"%s\"", uri);
+        LOGGER.debugf("patchRequest: payload=\"%s\"", JSONMapper.serialize(payload));
+
+        HttpRequest<JsonObject> req = this.client
+                .patch(uri)
+                .as(BodyCodec.jsonObject())
+                .putHeaders(this.convertToMultiMap(headers));
+
+        return req
+                .sendJson(payload)
+                .onItem().transform(r -> this.handleResponse(r))
+                .onFailure().transform(t -> this.handleFailure(t))
+                .ifNoItem()
+                .after(this.timeout)
+                .failWith(this.handleTimeout());
+    }
+
+    @Override
+    public Uni<Response> deleteRequest(
+            String uri,
+            Map<String, String> headers) {
+        LOGGER.infof("deleteRequest: uri=\"%s\"", uri);
+
+        HttpRequest<JsonObject> req = this.client
+                .delete(uri)
+                .as(BodyCodec.jsonObject())
+                .putHeaders(this.convertToMultiMap(headers));
+
+        return req
+                .send()
                 .onItem().transform(r -> this.handleResponse(r))
                 .onFailure().transform(t -> this.handleFailure(t))
                 .ifNoItem()
