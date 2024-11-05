@@ -18,6 +18,8 @@ import io.vertx.mutiny.ext.web.codec.BodyCodec;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 
@@ -47,7 +49,7 @@ public class VertxRestClient {
         HttpRequest<T> req = this.client
                 .getAbs(uri)
                 .as(BodyCodec.json(responseType))
-                .putHeaders(this.convertMapToMultiMap(headers));
+                .putHeaders(this.convertToMultiMap(headers));
 
         return req
                 .send()
@@ -69,7 +71,7 @@ public class VertxRestClient {
         HttpRequest<T> req = this.client
                 .postAbs(uri)
                 .as(BodyCodec.json(responseType))
-                .putHeaders(this.convertMapToMultiMap(headers));
+                .putHeaders(this.convertToMultiMap(headers));
 
         return req
                 .sendJson(payload)
@@ -91,7 +93,7 @@ public class VertxRestClient {
         HttpRequest<T> req = this.client
                 .putAbs(uri)
                 .as(BodyCodec.json(responseType))
-                .putHeaders(this.convertMapToMultiMap(headers));
+                .putHeaders(this.convertToMultiMap(headers));
 
         return req
                 .sendJson(payload)
@@ -108,11 +110,17 @@ public class VertxRestClient {
                 JSONMapper.serialize(res.body()));
 
         if (res.statusCode() >= 200 && res.statusCode() < 300) {
-            return Response.status(res.statusCode()).entity(res.body()).build();
+            return Response
+                    .status(res.statusCode())
+                    .replaceAll(this.convertToMultivaluedMap(res.headers()))
+                    .entity(res.body()).build();
         } else {
-            throw new WebApplicationException(
-                    res.body() == null ? "null" : res.body().toString(),
-                    res.statusCode());
+            Response errorResponse = Response
+                    .status(res.statusCode())
+                    .replaceAll(this.convertToMultivaluedMap(res.headers()))
+                    .entity(res.body() == null ? "" : res.body()).build();
+
+            throw new WebApplicationException(errorResponse);
         }
     }
 
@@ -145,7 +153,13 @@ public class VertxRestClient {
                         .build());
     }
 
-    private MultiMap convertMapToMultiMap(Map<String, String> obj) {
+    private MultiMap convertToMultiMap(Map<String, String> obj) {
         return MultiMap.caseInsensitiveMultiMap().addAll(obj);
+    }
+
+    private MultivaluedMap<String, Object> convertToMultivaluedMap(MultiMap obj) {
+        MultivaluedMap<String, Object> map = new MultivaluedHashMap<>();
+        obj.names().forEach(name -> map.addAll(name, obj.get(name)));
+        return map;
     }
 }
