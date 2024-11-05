@@ -9,6 +9,7 @@ import org.jboss.logging.Logger;
 import io.github.zbhavyai.boilerplatejava.models.SimpleResponse;
 import io.github.zbhavyai.boilerplatejava.utils.JSONMapper;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.MultiMap;
 import io.vertx.mutiny.core.Vertx;
 import io.vertx.mutiny.ext.web.client.HttpRequest;
@@ -40,15 +41,14 @@ public class VertxRestClient {
         this.timeout = Duration.ofSeconds(timeout);
     }
 
-    public <T> Uni<Response> getRequest(
+    public Uni<Response> getRequest(
             String uri,
-            Map<String, String> headers,
-            Class<T> responseType) {
+            Map<String, String> headers) {
         LOGGER.infof("getRequest: uri=\"%s\"", uri);
 
-        HttpRequest<T> req = this.client
+        HttpRequest<JsonObject> req = this.client
                 .getAbs(uri)
-                .as(BodyCodec.json(responseType))
+                .as(BodyCodec.jsonObject())
                 .putHeaders(this.convertToMultiMap(headers));
 
         return req
@@ -60,17 +60,16 @@ public class VertxRestClient {
                 .failWith(this.handleTimeout());
     }
 
-    public <T> Uni<Response> postRequest(
+    public Uni<Response> postRequest(
             String uri,
             Map<String, String> headers,
-            Object payload,
-            Class<T> responseType) {
+            Object payload) {
         LOGGER.infof("postRequest: uri=\"%s\"", uri);
         LOGGER.debugf("postRequest: payload=\"%s\"", JSONMapper.serialize(payload));
 
-        HttpRequest<T> req = this.client
+        HttpRequest<JsonObject> req = this.client
                 .postAbs(uri)
-                .as(BodyCodec.json(responseType))
+                .as(BodyCodec.jsonObject())
                 .putHeaders(this.convertToMultiMap(headers));
 
         return req
@@ -82,17 +81,16 @@ public class VertxRestClient {
                 .failWith(this.handleTimeout());
     }
 
-    public <T> Uni<Response> putRequest(
+    public Uni<Response> putRequest(
             String uri,
             Map<String, String> headers,
-            Object payload,
-            Class<T> responseType) {
+            Object payload) {
         LOGGER.infof("putRequest: uri=\"%s\"", uri);
         LOGGER.debugf("putRequest: payload=\"%s\"", JSONMapper.serialize(payload));
 
-        HttpRequest<T> req = this.client
+        HttpRequest<JsonObject> req = this.client
                 .putAbs(uri)
-                .as(BodyCodec.json(responseType))
+                .as(BodyCodec.jsonObject())
                 .putHeaders(this.convertToMultiMap(headers));
 
         return req
