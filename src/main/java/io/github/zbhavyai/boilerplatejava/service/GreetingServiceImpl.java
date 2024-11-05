@@ -28,7 +28,7 @@ public class GreetingServiceImpl implements GreetingService {
 
     @Override
     public Uni<Response> error() {
-        LOGGER.errorf("error");
+        LOGGER.infof("error");
 
         return Uni.createFrom()
                 .failure(() -> new WebApplicationException(
