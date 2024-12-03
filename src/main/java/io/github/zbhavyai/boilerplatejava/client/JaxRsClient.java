@@ -9,6 +9,7 @@ import org.jboss.logging.Logger;
 import io.github.zbhavyai.boilerplatejava.models.SimpleResponse;
 import io.github.zbhavyai.boilerplatejava.utils.JSONMapper;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -138,8 +139,8 @@ public class JaxRsClient implements RestClient {
 
     private <T> Response handleResponse(Response res) {
         LOGGER.infof("handleResponse: status=\"%s\"", res.getStatus());
-        LOGGER.debugf("handleResponse: headers=\"%s\", body=\"%s\"", res.getHeaders(),
-                JSONMapper.serialize(res.getEntity()));
+        LOGGER.debugf("handleResponse: headers=\"%s\", startBuffer=\"%b\", body=\"%s\"", res.getHeaders(),
+                res.bufferEntity(), JSONMapper.serialize(res.readEntity(JsonObject.class)));
 
         if (res.getStatus() >= 200 && res.getStatus() < 300) {
             return res;
