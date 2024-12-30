@@ -137,7 +137,7 @@ public class JaxRsClient implements RestClient {
                 .failWith(this.handleTimeout());
     }
 
-    private <T> Response handleResponse(Response res) {
+    private Response handleResponse(Response res) {
         LOGGER.infof("handleResponse: status=\"%s\"", res.getStatus());
         LOGGER.debugf("handleResponse: headers=\"%s\", startBuffer=\"%b\", body=\"%s\"", res.getHeaders(),
                 res.bufferEntity(), JSONMapper.serialize(res.readEntity(JsonObject.class)));
@@ -150,9 +150,7 @@ public class JaxRsClient implements RestClient {
     }
 
     private Throwable handleFailure(Throwable t) {
-        if (t instanceof WebApplicationException) {
-            WebApplicationException tw = (WebApplicationException) t;
-
+        if (t instanceof WebApplicationException tw) {
             LOGGER.errorf("handleFailure: statusCode=\"%s\", statusMessage=\"%s\" error=\"%s\"",
                     tw.getResponse().getStatus(),
                     tw.getResponse().getStatusInfo().getReasonPhrase(),

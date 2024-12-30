@@ -168,9 +168,7 @@ public class VertxRestClient implements RestClient {
     }
 
     private Throwable handleFailure(Throwable t) {
-        if (t instanceof WebApplicationException) {
-            WebApplicationException tw = (WebApplicationException) t;
-
+        if (t instanceof WebApplicationException tw) {
             LOGGER.errorf("handleFailure: statusCode=\"%s\", statusMessage=\"%s\" error=\"%s\"",
                     tw.getResponse().getStatus(),
                     tw.getResponse().getStatusInfo().getReasonPhrase(),
