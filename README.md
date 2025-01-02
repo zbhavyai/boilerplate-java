@@ -7,7 +7,7 @@ Use this boilerplate code to author Java applications using Quarkus.
 You can run your application in dev mode that enables live coding using below. Dev UI should be accessible at [http://localhost:3005/q/dev-ui/](http://localhost:3005/q/dev-ui/).
 
 ```shell
-./mvnw compile quarkus:dev
+./mvnw quarkus:dev
 ```
 
 ## Packaging and running JAR
