@@ -12,28 +12,27 @@ import jakarta.ws.rs.core.Response.Status;
 @ApplicationScoped
 public class GreetingServiceImpl implements GreetingService {
 
-    private static final Logger LOGGER = Logger.getLogger(GreetingService.class.getSimpleName());
+  private static final Logger LOGGER = Logger.getLogger(GreetingService.class.getSimpleName());
 
-    @Override
-    public Uni<Response> greet() {
-        LOGGER.infof("greet");
+  @Override
+  public Uni<Response> greet() {
+    LOGGER.infof("greet");
 
-        Response res = Response
-                .status(Status.OK)
-                .entity(SimpleResponse.create("Hello World!"))
-                .build();
+    Response res = Response.status(Status.OK).entity(SimpleResponse.create("Hello World!")).build();
 
-        return Uni.createFrom().item(res);
-    }
+    return Uni.createFrom().item(res);
+  }
 
-    @Override
-    public Uni<Response> error() {
-        LOGGER.infof("error");
+  @Override
+  public Uni<Response> error() {
+    LOGGER.infof("error");
 
-        return Uni.createFrom()
-                .failure(() -> new WebApplicationException(
-                        Response.status(Status.BAD_REQUEST)
-                                .entity(SimpleResponse.create(Status.BAD_REQUEST.getReasonPhrase()))
-                                .build()));
-    }
+    return Uni.createFrom()
+        .failure(
+            () ->
+                new WebApplicationException(
+                    Response.status(Status.BAD_REQUEST)
+                        .entity(SimpleResponse.create(Status.BAD_REQUEST.getReasonPhrase()))
+                        .build()));
+  }
 }

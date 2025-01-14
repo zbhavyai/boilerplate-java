@@ -1,6 +1,7 @@
 {
   "recommendations": [
     "esbenp.prettier-vscode",
+    "josevseb.google-java-format-for-vs-code",
     "redhat.java",
     "redhat.vscode-xml",
     "visualstudioexptteam.vscodeintellicode",

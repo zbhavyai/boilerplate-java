@@ -8,7 +8,7 @@
   "extensions.ignoreRecommendations": true,
   "java.saveActions.organizeImports": true,
   "redhat.telemetry.enabled": false,
-  "[java]": { "editor.defaultFormatter": "redhat.java" },
+  "[java]": { "editor.defaultFormatter": "josevseb.google-java-format-for-vs-code" },
   "[xml]": { "editor.defaultFormatter": "redhat.vscode-xml" },
   "[markdown]": { "editor.tabSize": 3 },
   "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable",
