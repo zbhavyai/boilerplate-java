@@ -131,7 +131,7 @@ public class JaxRsClient implements RestClient {
         res.bufferEntity(),
         JSONMapper.serialize(res.readEntity(JsonObject.class)));
 
-    if (res.getStatus() >= 200 && res.getStatus() < 300) {
+    if (res.getStatus() >= 200 && res.getStatus() < 400) {
       return res;
     } else {
       throw new WebApplicationException(res);
