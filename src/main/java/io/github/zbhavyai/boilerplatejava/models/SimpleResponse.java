@@ -2,7 +2,6 @@ package io.github.zbhavyai.boilerplatejava.models;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection

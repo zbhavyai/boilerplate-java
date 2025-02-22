@@ -1,11 +1,5 @@
 package io.github.zbhavyai.boilerplatejava.client;
 
-import java.time.Duration;
-import java.util.Map;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.logging.Logger;
-
 import io.github.zbhavyai.boilerplatejava.models.SimpleResponse;
 import io.github.zbhavyai.boilerplatejava.utils.JSONMapper;
 import io.smallrye.mutiny.Uni;
@@ -19,6 +13,10 @@ import jakarta.ws.rs.client.CompletionStageRxInvoker;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import java.time.Duration;
+import java.util.Map;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class JaxRsClient implements RestClient {

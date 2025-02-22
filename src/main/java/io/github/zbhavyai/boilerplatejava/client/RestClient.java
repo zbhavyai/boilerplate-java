@@ -1,9 +1,8 @@
 package io.github.zbhavyai.boilerplatejava.client;
 
-import java.util.Map;
-
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 public interface RestClient {
 
