@@ -6,11 +6,13 @@ import io.smallrye.mutiny.Uni;
 import io.vertx.core.json.JsonObject;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.CompletionStageRxInvoker;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.time.Duration;
@@ -37,17 +39,7 @@ public class JaxRsClient implements RestClient {
   public Uni<Response> getRequest(String uri, Map<String, String> headers) {
     LOGGER.infof("getRequest: uri=\"%s\"", uri);
 
-    CompletionStageRxInvoker invoker = this.client.target(uri).request().rx();
-
-    return Uni.createFrom()
-        .completionStage(invoker.get())
-        .onItem()
-        .transform(r -> this.handleResponse(r))
-        .onFailure()
-        .transform(t -> this.handleFailure(t))
-        .ifNoItem()
-        .after(this.timeout)
-        .failWith(this.handleTimeout());
+    return sendRequest(HttpMethod.GET, uri, headers, null);
   }
 
   @Override
@@ -55,17 +47,7 @@ public class JaxRsClient implements RestClient {
     LOGGER.infof("postRequest: uri=\"%s\"", uri);
     LOGGER.debugf("postRequest: payload=\"%s\"", JSONMapper.serialize(payload));
 
-    CompletionStageRxInvoker invoker = this.client.target(uri).request().rx();
-
-    return Uni.createFrom()
-        .completionStage(invoker.post(Entity.json(payload)))
-        .onItem()
-        .transform(r -> this.handleResponse(r))
-        .onFailure()
-        .transform(t -> this.handleFailure(t))
-        .ifNoItem()
-        .after(this.timeout)
-        .failWith(this.handleTimeout());
+    return sendRequest(HttpMethod.POST, uri, headers, payload);
   }
 
   @Override
@@ -73,17 +55,7 @@ public class JaxRsClient implements RestClient {
     LOGGER.infof("putRequest: uri=\"%s\"", uri);
     LOGGER.debugf("putRequest: payload=\"%s\"", JSONMapper.serialize(payload));
 
-    CompletionStageRxInvoker invoker = this.client.target(uri).request().rx();
-
-    return Uni.createFrom()
-        .completionStage(invoker.put(Entity.json(payload)))
-        .onItem()
-        .transform(r -> this.handleResponse(r))
-        .onFailure()
-        .transform(t -> this.handleFailure(t))
-        .ifNoItem()
-        .after(this.timeout)
-        .failWith(this.handleTimeout());
+    return sendRequest(HttpMethod.PUT, uri, headers, payload);
   }
 
   @Override
@@ -91,43 +63,56 @@ public class JaxRsClient implements RestClient {
     LOGGER.infof("patchRequest: uri=\"%s\"", uri);
     LOGGER.debugf("patchRequest: payload=\"%s\"", JSONMapper.serialize(payload));
 
-    CompletionStageRxInvoker invoker = this.client.target(uri).request().rx();
-
-    return Uni.createFrom()
-        .completionStage(invoker.method("PATCH", Entity.json(payload)))
-        .onItem()
-        .transform(r -> this.handleResponse(r))
-        .onFailure()
-        .transform(t -> this.handleFailure(t))
-        .ifNoItem()
-        .after(this.timeout)
-        .failWith(this.handleTimeout());
+    return sendRequest(HttpMethod.PATCH, uri, headers, payload);
   }
 
   @Override
   public Uni<Response> deleteRequest(String uri, Map<String, String> headers) {
     LOGGER.infof("deleteRequest: uri=\"%s\"", uri);
 
-    CompletionStageRxInvoker invoker = this.client.target(uri).request().rx();
+    return sendRequest(HttpMethod.DELETE, uri, headers, null);
+  }
+
+  private Uni<Response> sendRequest(
+      String method, String uri, Map<String, String> headers, Object payload) {
+    LOGGER.debugf(
+        "%s request: uri=\"%s\", payload=\"%s\"", method, uri, JSONMapper.serialize(payload));
+
+    Invocation.Builder request = client.target(uri).request();
+    headers.forEach((k, v) -> request.header(k, v));
+    CompletionStageRxInvoker invoker = request.rx();
 
     return Uni.createFrom()
-        .completionStage(invoker.delete())
+        .completionStage(
+            payload == null ? invoker.method(method) : invoker.method(method, Entity.json(payload)))
         .onItem()
         .transform(r -> this.handleResponse(r))
         .onFailure()
         .transform(t -> this.handleFailure(t))
         .ifNoItem()
         .after(this.timeout)
-        .failWith(this.handleTimeout());
+        .failWith(() -> this.handleTimeout());
   }
 
   private Response handleResponse(Response res) {
-    LOGGER.infof("handleResponse: status=\"%s\"", res.getStatus());
-    LOGGER.debugf(
-        "handleResponse: headers=\"%s\", startBuffer=\"%b\", body=\"%s\"",
-        res.getHeaders(),
-        res.bufferEntity(),
-        JSONMapper.serialize(res.readEntity(JsonObject.class)));
+    LOGGER.infof(
+        "handleResponse: status=\"%d\", statusInfo=\"%s\", headers=\"%s\", startBuffer=\"%b\"",
+        res.getStatus(), res.getStatusInfo().toEnum(), res.getHeaders(), res.bufferEntity());
+
+    try {
+      String body = res.readEntity(String.class);
+
+      if (body == null || body.isBlank()) {
+        // don't log empty body
+      } else if (body.trim().startsWith("{") || body.trim().startsWith("[")) {
+        JsonObject json = new JsonObject(body);
+        LOGGER.debugf("handleResponse: body=\"%s\"", json.encode());
+      } else {
+        LOGGER.debugf("handleResponse: body=\"%s\"", body);
+      }
+    } catch (Exception e) {
+      LOGGER.debugf("handleResponse: failed to read response body: \"%s\"", e.getMessage());
+    }
 
     if (res.getStatus() >= 200 && res.getStatus() < 400) {
       return res;
@@ -139,7 +124,7 @@ public class JaxRsClient implements RestClient {
   private Throwable handleFailure(Throwable t) {
     if (t instanceof WebApplicationException tw) {
       LOGGER.errorf(
-          "handleFailure: statusCode=\"%s\", statusMessage=\"%s\" error=\"%s\"",
+          "handleFailure: statusCode=\"%s\", statusMessage=\"%s\", error=\"%s\"",
           tw.getResponse().getStatus(),
           tw.getResponse().getStatusInfo().getReasonPhrase(),
           tw.getLocalizedMessage());
