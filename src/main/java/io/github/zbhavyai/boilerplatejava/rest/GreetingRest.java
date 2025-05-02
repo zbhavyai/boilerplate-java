@@ -9,7 +9,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("/api/v1/")
+@Path("/v1")
 public class GreetingRest {
 
   private final GreetingService service;
