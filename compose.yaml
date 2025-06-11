@@ -13,9 +13,6 @@ services:
     networks:
       - net
 
-volumes:
-  db_data:
-
 networks:
   net:
     driver: bridge
