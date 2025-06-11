@@ -1,0 +1,21 @@
+name: boilerplate-java
+
+services:
+  boilerplate_java:
+    build:
+      context: .
+      dockerfile: Dockerfile.native
+    image: boilerplate_java:1.0.0
+    container_name: boilerplate_java
+    restart: unless-stopped
+    ports:
+      - 3005:3005
+    networks:
+      - net
+
+volumes:
+  db_data:
+
+networks:
+  net:
+    driver: bridge
