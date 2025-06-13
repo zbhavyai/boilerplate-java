@@ -15,17 +15,15 @@
 
   idx = {
     extensions = [
-      "dbaeumer.vscode-eslint"
       "esbenp.prettier-vscode"
       "foxundermoon.shell-format"
       "josevseb.google-java-format-for-vs-code"
-      "ms-azuretools.vscode-containers"
-      "ms-vscode-remote.remote-containers"
       "pkief.material-icon-theme"
       "redhat.java"
       "redhat.vscode-microprofile"
       "redhat.vscode-quarkus"
       "redhat.vscode-xml"
+      "redhat.vscode-yaml"
       "renesaarsoo.sql-formatter-vsc"
       "sonarsource.sonarlint-vscode"
       "visualstudioexptteam.intellicode-api-usage-examples"
